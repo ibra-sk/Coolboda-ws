@@ -6,11 +6,12 @@ const redis = require('redis');
 //Connect Redis Service
 const redisUrl = process.env.REDIS_URL || 'redis://:pe168732acf2704566ee0f0e6a186053dd012b4a2ae3ca475da0c1a93a7651cb9@ec2-54-170-246-70.eu-west-1.compute.amazonaws.com:32230'
 const redisClient = redis.createClient({url: redisUrl}); //On Heroku
-//redisClient.connect();
+redisClient.connect();
 redisClient.on('error', function (err) {
     try{
         console.log(typeof(err));
-        console.log('Could not establish a connection with redis. ' + err);
+        console.log(err);
+        console.log('Could not establish a connection with redis. ');
     }catch  (error) {
         console.log(error);
     }
