@@ -9,7 +9,6 @@ const redisClient = redis.createClient({url: redisUrl}); //On Heroku
 //redisClient.connect();
 redisClient.on('error', function (err) {
     try{
-        console.log(typeof(err));
         console.log(err);
         console.log('Could not establish a connection with redis. ');
     }catch  (error) {
@@ -52,54 +51,9 @@ app.get("/drivers", (req, res) => {
 
 
 
-function User(socketId, MID, myName, myStatus, myPhone) {
-    this.id = socketId;
-    this.mid = MID;
-    this.status = myStatus;
-    this.username = myName;
-    this.phone = myPhone;
-    
-    this.getId = function () {
-        return this.id;
-    };
-    this.getMID = function () {
-        return this.mid;
-    };
-    this.getName = function () {
-        return this.username;
-    };
-    this.getPhone = function () {
-        return this.phone;
-    };
-    this.getStatus = function () {
-        return this.status;
-    };
-    this.setStatus = function (newStatus) {
-        this.status = newStatus;
-    }
-}
-
-var userMap = new Map();
-
-
 ////Socket Setup
-var io = socket(server);
-
-
-io.on('connection', function(socket){
-    console.log("Made socket connection");
-    redisClient.set(socket.userId, "online");
-
-    socket.on("new user", function (data) {
-        socket.userId = data;
-        //activeUsers.add(data);
-        //redisClient.set(socket.userId, "online");
-        io.emit("new user", socket.userId);
-    });
-
-    socket.on("disconnect", () => {
-        //activeUsers.delete(socket.userId);
-        redisClient.del(socket.userId);
-        io.emit("user disconnected", socket.userId);
-    });
-})
+const io = socketIO(server);
+io.on('connection', (socket) => {
+    console.log('Client connected');
+    socket.on('disconnect', () => console.log('Client disconnected'));
+});
