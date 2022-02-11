@@ -6,7 +6,7 @@ const redis = require('redis');
 //Connect Redis Service
 const redisUrl = process.env.REDIS_URL || 'redis://:pe168732acf2704566ee0f0e6a186053dd012b4a2ae3ca475da0c1a93a7651cb9@ec2-54-170-246-70.eu-west-1.compute.amazonaws.com:32230'
 const redisClient = redis.createClient({url: redisUrl}); //On Heroku
-redisClient.connect();
+//redisClient.connect();
 redisClient.on('error', function (err) {
     try{
         console.log(typeof(err));
@@ -83,24 +83,17 @@ var userMap = new Map();
 
 
 ////Socket Setup
-var io = socket(server, {
-    cors: {
-        origin: "https://coolboda-ws.herokuapp.com/",
-        methods: ["GET", "POST"],
-        transports: ['websocket', 'polling'],
-        credentials: false
-    },
-    allowEIO3: true
-});
+var io = socket(server);
 
 
 io.on('connection', function(socket){
     console.log("Made socket connection");
+    redisClient.set(socket.userId, "online");
 
     socket.on("new user", function (data) {
         socket.userId = data;
         //activeUsers.add(data);
-        redisClient.set(socket.userId, "online");
+        //redisClient.set(socket.userId, "online");
         io.emit("new user", socket.userId);
     });
 
