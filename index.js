@@ -4,25 +4,27 @@ const redis = require('redis');
 
 
 //Connect Redis Service
-const redisUrl = process.env.REDIS_URL || 'redis://:pe168732acf2704566ee0f0e6a186053dd012b4a2ae3ca475da0c1a93a7651cb9@ec2-54-170-246-70.eu-west-1.compute.amazonaws.com:32230'
-const redisClient = redis.createClient({url: redisUrl}); //On Heroku
-redisClient.connect();
+const HEROKU_redisUrl = process.env.REDIS_URL || 'redis://:pe168732acf2704566ee0f0e6a186053dd012b4a2ae3ca475da0c1a93a7651cb9@ec2-54-170-246-70.eu-west-1.compute.amazonaws.com:32230'
+const REDIS_PORT = 15027;
+const REDIS_HOST = "redis-15027.c293.eu-central-1-1.ec2.cloud.redislabs.com"; // This is the IP address of your DigitalOcean droplet
+const REDIS_USERNAME = "";
+const REDIS_PASSWORD = "8H2SX6lx8Duc1Nbktgbe0AFsA1f6ozxm"; // This is the password we created above for our Redis database.
+const REDIS_URL = `redis://${REDIS_USERNAME}:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}`;
+
+const redisClient = redis.createClient({legacyMode: true, url: REDIS_URL});
+(async () => {
+    await redisClient.connect();
+})();
 redisClient.on('error', function (err) {
-    try{
-        console.log(err);
-        console.log('Could not establish a connection with redis. ');
-    }catch  (error) {
-        console.log(error);
-    }
+    console.log('Could not establish a connection with redis. ');
+    console.log(err);
 });
 redisClient.on('connect', function (err) {
     console.log('Connected to redis successfully');
 });
 
-
 //App Setup
 var app = express();
-
 const port = process.env.PORT || 5000;
 var server = app.listen(port, function(){
     console.log(`listining request to port ${port}`);
@@ -32,26 +34,19 @@ const INDEX = '/index.html';
 
 //Route Setup
 app.get("/", (req, res) => {
-    //res.send('hello world');
+    redisClient.set('checkUp', "online");
     res.sendFile(INDEX, { root: __dirname })
 });
 
 app.get("/drivers", (req, res) => {
-    //res.status(200).text("list of driver");
-    //res.send('hello world');
-    
     let allDrivers = [];
-    redisClient.keys('Cliento', function (err, keys) {
+    redisClient.keys('*', function (err, keys) {
         if (err) return console.log(err);
-        
-        for(var i = 0, len = keys.length; i < len; i++) {
-            allDrivers.push(key[i]);
-        }
-        console.log('redis Keys Found');
-    });   
+        console.log(keys);
+        allDrivers.push(keys);
+    });
     res.send(allDrivers);
 });
-
 
 
 
@@ -68,11 +63,20 @@ const io = socketIO(server, {
         methods: ["GET", "POST"],
     }
 });
-io.on('connection', (socket) => {
-    console.log('Client connected');
-    console.log(socket);
-    redisClient.set("Cliento", "online", redis.print);
-    socket.on('disconnect', () => console.log('Client disconnected'));
-});
+io.on('connection', function(socket){
+    console.log("Made socket connection");
+    redisClient.set(socket.id, "online");
+
+    socket.on("getID", function (data) {
+        console.log(data);
+        //redisClient.set(socket.userId, "online");
+        io.emit("getID", socket.id);
+    });
+
+    socket.on("disconnect", () => {
+        redisClient.del(socket.id);
+        console.log("user disconnected");
+    });
+})
 
 setInterval(() => io.emit('time', new Date().toTimeString()), 1000);
