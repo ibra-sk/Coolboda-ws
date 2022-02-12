@@ -28,6 +28,7 @@ var server = app.listen(port, function(){
     console.log(`listining request to port ${port}`);
 });
 
+
 //Route Setup
 app.get("/", (req, res) => {
     res.send('hello world');
@@ -57,3 +58,5 @@ io.on('connection', (socket) => {
     console.log('Client connected');
     socket.on('disconnect', () => console.log('Client disconnected'));
 });
+
+setInterval(() => io.emit('time', new Date().toTimeString()), 1000);
