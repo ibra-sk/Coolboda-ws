@@ -55,7 +55,17 @@ app.get("/drivers", (req, res) => {
 
 
 ////Socket Setup
-const io = socketIO(server);
+const io = socketIO(server, {
+    maxHttpBufferSize: 100000000,
+    connectTimeout: 5000,
+    transports:['websocket','polling'],
+    pingInterval: 25 * 1000,
+    pingTimeout: 5000,
+    allowEIO3: true,
+    cors: {
+        origin: "https://coolboda-ws.herokuapp.com/:"+port,
+        methods: ["GET", "POST"],
+});
 io.on('connection', (socket) => {
     console.log('Client connected');
     socket.on('disconnect', () => console.log('Client disconnected'));
