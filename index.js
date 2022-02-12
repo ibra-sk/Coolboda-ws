@@ -65,6 +65,7 @@ const io = socketIO(server, {
     cors: {
         origin: "https://coolboda-ws.herokuapp.com/:"+port,
         methods: ["GET", "POST"],
+    }
 });
 io.on('connection', (socket) => {
     console.log('Client connected');
