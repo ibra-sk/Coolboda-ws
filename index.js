@@ -28,10 +28,12 @@ var server = app.listen(port, function(){
     console.log(`listining request to port ${port}`);
 });
 
+const INDEX = '/index.html';
 
 //Route Setup
 app.get("/", (req, res) => {
-    res.send('hello world');
+    //res.send('hello world');
+    res.sendFile(INDEX, { root: __dirname })
 });
 
 app.get("/drivers", (req, res) => {
