@@ -40,15 +40,16 @@ app.get("/drivers", (req, res) => {
     //res.status(200).text("list of driver");
     //res.send('hello world');
     
+    let allDrivers = [];
     redisClient.keys('*', function (err, keys) {
         if (err) return console.log(err);
         
-        let allDrivers = [];
         for(var i = 0, len = keys.length; i < len; i++) {
             allDrivers.push(key[i]);
-            res.send(allDrivers);
         }
+        console.log('redis Keys Found');
     });   
+    res.send(allDrivers);
 });
 
 
