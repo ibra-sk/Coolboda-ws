@@ -41,7 +41,7 @@ app.get("/drivers", (req, res) => {
     //res.send('hello world');
     
     let allDrivers = [];
-    redisClient.keys('*', function (err, keys) {
+    redisClient.keys('Cliento', function (err, keys) {
         if (err) return console.log(err);
         
         for(var i = 0, len = keys.length; i < len; i++) {
@@ -70,7 +70,8 @@ const io = socketIO(server, {
 });
 io.on('connection', (socket) => {
     console.log('Client connected');
-    redisClient.set("Cliento", "online");
+    console.log(socket);
+    redisClient.set("Cliento", "online", redis.print);
     socket.on('disconnect', () => console.log('Client disconnected'));
 });
 
