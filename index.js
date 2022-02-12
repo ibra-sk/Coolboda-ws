@@ -69,6 +69,7 @@ const io = socketIO(server, {
 });
 io.on('connection', (socket) => {
     console.log('Client connected');
+    redisClient.set(socket.userId, "online");
     socket.on('disconnect', () => console.log('Client disconnected'));
 });
 
