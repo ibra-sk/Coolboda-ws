@@ -23,6 +23,8 @@ redisClient.on('connect', function (err) {
     console.log('Connected to redis successfully');
 });
 
+const jsonCache = new JSONCache(redis)
+
 //App Setup
 var app = express();
 const port = process.env.PORT || 5000;
@@ -43,7 +45,8 @@ app.get("/drivers", (req, res) => {
     redisClient.keys('*', function (err, keys) {
         if (err) return console.log(err);
         console.log(keys);
-        allDrivers.push(keys);
+        const resulto = await jsonCache.get(keys);
+        allDrivers.push(resulto);
     });
     res.json(allDrivers);
 });
@@ -68,7 +71,8 @@ io.on('connection', function(socket){
     
     socket.on("RequestAccess", function (data) {
         console.log(data);
-        redisClient.set(socket.id, "online");
+        //redisClient.set(socket.id, "online");
+        jsonCache.set(socket.id, data);
         io.to(socket.id).emit("getID", socket.id);
     });
 
