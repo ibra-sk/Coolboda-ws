@@ -45,7 +45,7 @@ app.get("/drivers", (req, res) => {
         console.log(keys);
         allDrivers.push(keys);
     });
-    res.send(allDrivers);
+    res.json(allDrivers);
 });
 
 
