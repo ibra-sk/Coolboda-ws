@@ -59,7 +59,7 @@ const io = socketIO(server, {
     pingTimeout: 5000,
     allowEIO3: true,
     cors: {
-        origin: "https://coolboda-ws.herokuapp.com/:"+port,
+        origin: "https://coolboda-ws.herokuapp.com:"+port,
         methods: ["GET", "POST"],
     }
 });
