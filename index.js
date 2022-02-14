@@ -45,8 +45,9 @@ app.get("/drivers", (req, res) => {
     redisClient.keys('*', function (err, keys) {
         if (err) return console.log(err);
         console.log(keys);
-        const resulto = await jsonCache.get(keys);
-        allDrivers.push(resulto);
+        //const resulto = await jsonCache.get(keys);
+        //allDrivers.push(resulto);
+        allDrivers.push(keys);
     });
     res.json(allDrivers);
 });
