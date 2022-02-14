@@ -65,12 +65,11 @@ const io = socketIO(server, {
 });
 io.on('connection', function(socket){
     console.log("Made socket connection");
-    redisClient.set(socket.id, "online");
-
-    socket.on("getID", function (data) {
+    
+    socket.on("RequestAccess", function (data) {
         console.log(data);
-        //redisClient.set(socket.userId, "online");
-        io.emit("getID", socket.id);
+        redisClient.set(socket.id, "online");
+        io.to(socket.id).emit("getID", socket.id);
     });
 
     socket.on("disconnect", () => {
@@ -79,4 +78,5 @@ io.on('connection', function(socket){
     });
 })
 
-setInterval(() => io.emit('time', new Date().toTimeString()), 1000);
+//setInterval(() => io.emit('time', new Date().toTimeString()), 1000);
+setInterval(() => io.emit('isalive', '?'), 60000);
