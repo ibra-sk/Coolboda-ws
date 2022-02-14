@@ -23,7 +23,7 @@ redisClient.on('connect', function (err) {
     console.log('Connected to redis successfully');
 });
 
-const jsonCache = new JSONCache(redis)
+//const jsonCache = new JSONCache(redis)
 
 //App Setup
 var app = express();
@@ -72,8 +72,8 @@ io.on('connection', function(socket){
     
     socket.on("RequestAccess", function (data) {
         console.log(data);
-        //redisClient.set(socket.id, "online");
-        jsonCache.set(socket.id, data);
+        redisClient.set(socket.id, "online");
+        //jsonCache.set(socket.id, data);
         io.to(socket.id).emit("getID", socket.id);
     });
 
