@@ -44,16 +44,22 @@ app.get("/drivers", (req, res) => {
     var allDrivers = [];
     redisClient.keys('*', function (err, keys) {
         if (err) return console.log(err);
-        console.log(keys);
-        //const resulto = await jsonCache.get(keys);
-        //allDrivers.push(resulto);
-        allDrivers.push(keys);
-    });
-    var jsonDrivers = JSON.stringify(allDrivers);
-    console.log(allDrivers);
 
-    res.set('Content-Type', 'application/json');
-    res.json(jsonDrivers);
+        async.each(keys, function(key, callback) {
+            redisClient.get(key, function(err, value) {
+                //r[key] = value;
+                allDrivers.push(key);
+                callback(err);
+            });
+        }, function() {
+            // when callback is finished
+            var jsonDrivers = JSON.stringify(allDrivers);
+            console.log(allDrivers);
+
+            res.set('Content-Type', 'application/json');
+            res.json(jsonDrivers);
+        });
+    });
 });
 
 
