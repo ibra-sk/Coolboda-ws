@@ -1,6 +1,7 @@
 const express = require('express');
 const socketIO = require('socket.io');
 const redis = require('redis');
+const async = require("async");
 
 
 //Connect Redis Service
@@ -53,11 +54,10 @@ app.get("/drivers", (req, res) => {
             });
         }, function() {
             // when callback is finished
-            var jsonDrivers = JSON.stringify(allDrivers);
-            console.log(allDrivers);
-
+            
+            //console.log(allDrivers);
             res.set('Content-Type', 'application/json');
-            res.json(jsonDrivers);
+            res.json(allDrivers);
         });
     });
 });
@@ -84,7 +84,7 @@ io.on('connection', function(socket){
         console.log(data);
         redisClient.set(socket.id, "online");
         //jsonCache.set(socket.id, data);
-        io.to(socket.id).emit("getID", socket.id);
+        io.to(socket.id).emit("getid", socket.id);
     });
 
     socket.on("disconnect", () => {
