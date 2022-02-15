@@ -44,12 +44,14 @@ app.get("/drivers", (req, res) => {
     let allDrivers = [];
     redisClient.keys('*', function (err, keys) {
         if (err) return console.log(err);
-        console.log(keys);
+        //console.log(keys);
         //const resulto = await jsonCache.get(keys);
         //allDrivers.push(resulto);
         allDrivers.push(keys);
     });
-    res.json(allDrivers);
+    let jsonDrivers = JSON.stringify(allDrivers);
+    console.log(allDrivers);
+    res.send(jsonDrivers);
 });
 
 
