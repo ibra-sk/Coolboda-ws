@@ -51,7 +51,9 @@ app.get("/drivers", (req, res) => {
     });
     var jsonDrivers = JSON.stringify(allDrivers);
     console.log(allDrivers);
-    res.send(jsonDrivers);
+
+    res.set('Content-Type', 'application/json');
+    res.json(jsonDrivers);
 });
 
 
