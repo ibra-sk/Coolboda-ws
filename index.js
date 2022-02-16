@@ -1,7 +1,7 @@
 const express = require('express');
 const socketIO = require('socket.io');
 const redis = require('redis');
-const async = require("async");
+const async = require('async');
 
 
 //Connect Redis Service
@@ -38,7 +38,7 @@ const INDEX = '/index.html';
 //Route Setup
 app.get("/", (req, res) => {
     redisClient.set('checkUp', "online");
-    res.sendFile(INDEX, { root: __dirname })
+    //res.sendFile(INDEX, { root: __dirname })
 });
 
 app.get("/drivers", (req, res) => {
@@ -49,7 +49,7 @@ app.get("/drivers", (req, res) => {
         async.each(keys, function(key, callback) {
             redisClient.get(key, function(err, value) {
                 //r[key] = value;
-                allDrivers.push(key);
+                allDrivers.push(value);
                 callback(err);
             });
         }, function() {
@@ -82,7 +82,7 @@ io.on('connection', function(socket){
     
     socket.on("RequestAccess", function (data) {
         console.log(data);
-        redisClient.set(socket.id, "online");
+        redisClient.set(socket.id, data);
         //jsonCache.set(socket.id, data);
         io.to(socket.id).emit("getid", socket.id);
     });
